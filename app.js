@@ -145,6 +145,7 @@ lastSeen: serverTimestamp()
 
 listenPresence();
 listenMessages();
+listenTyping();
 
 }
 
@@ -155,25 +156,25 @@ onSnapshot(
 collection(db, "rooms", currentRoom, "presence"),
 (snapshot) => {
 
-const users = [];
+let friendName = "Waiting...";
+let friendOnline = false;
 
 snapshot.forEach((docSnap) => {
 
 const data = docSnap.data();
 
-users.push(data);
+if (data.name !== currentUser) {
+
+friendName = data.name;
+friendOnline = data.online;
+
+}
 
 });
 
-const friend = users.find(
-user => user.name !== currentUser
-);
+roomTitle.textContent = friendName;
 
-if (friend) {
-
-roomTitle.textContent = friend.name;
-
-if (friend.online) {
+if (friendOnline) {
 
 onlineStatus.innerHTML = "🟢 Online";
 
@@ -183,18 +184,10 @@ onlineStatus.innerHTML = "⚫ Offline";
 
 }
 
-} else {
-
-roomTitle.textContent = "Waiting...";
-onlineStatus.innerHTML = "⚫ Offline";
-
-}
-
 }
 );
 
 }
-
 
 
 sendBtn.onclick = sendMessage;
@@ -297,10 +290,9 @@ messagesDiv.innerHTML += `
 
 <div class="message ${mine ? "myMessage" : "otherMessage"}">
 
-<div class="sender">
-${data.sender}
+<div class="messageText">
+${data.text}
 </div>
-
 
 <div class="messageInfo">
 ${time}
@@ -320,15 +312,46 @@ messagesDiv.scrollHeight;
 
 }
 
-messageInput.addEventListener("input", () => {
+messageInput.addEventListener(
+"input",
+async ()=>{
 
-typingIndicator.classList.remove("hidden");
+if(!currentRoom) return;
 
-clearTimeout(window.typingTimeout);
+await setDoc(
+doc(
+db,
+"rooms",
+currentRoom,
+"typing",
+currentUser
+),
+{
+name:currentUser,
+typing:true
+}
+);
 
-window.typingTimeout = setTimeout(() => {
-typingIndicator.classList.add("hidden");
-}, 1000);
+clearTimeout(window.typingTimer);
+
+window.typingTimer =
+setTimeout(async ()=>{
+
+await setDoc(
+doc(
+db,
+"rooms",
+currentRoom,
+"typing",
+currentUser
+),
+{
+name:currentUser,
+typing:false
+}
+);
+
+},1000);
 
 });
 
@@ -350,5 +373,48 @@ online: false,
 lastSeen: serverTimestamp()
 }
 );
+
+function listenTyping() {
+
+onSnapshot(
+collection(
+db,
+"rooms",
+currentRoom,
+"typing"
+),
+(snapshot)=>{
+
+let typingUser = "";
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+if(
+data.name !== currentUser &&
+data.typing
+){
+typingUser = data.name;
+}
+
+});
+
+if(typingUser){
+
+typingIndicator.innerHTML =
+typingUser + " is typing...";
+
+typingIndicator.classList.remove("hidden");
+
+}else{
+
+typingIndicator.classList.add("hidden");
+
+}
+
+});
+
+}
 
 });
