@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Private Chat</title>
 
 <link rel="stylesheet" href="style.css">
@@ -12,18 +13,134 @@
 
 <body>
 
-<div class="container">
+<!-- NAME SCREEN -->
+<div id="nameScreen" class="screen">
 
-<h1>💬 Private Chat</h1>
+    <div class="card">
 
-<input id="name" placeholder="Your Name">
+        <h1>💬 Private Chat</h1>
 
-<div id="messages"></div>
+        <p class="subtitle">
+            Enter your name to continue
+        </p>
 
-<div class="bottom">
-<input id="messageInput" placeholder="Type message...">
-<button id="sendBtn">Send</button>
+        <input
+            id="nameInput"
+            type="text"
+            placeholder="Your Name"
+            maxlength="30"
+        >
+
+        <button id="continueBtn">
+            Continue
+        </button>
+
+    </div>
+
 </div>
+
+<!-- ROOM SCREEN -->
+<div id="roomScreen" class="screen hidden">
+
+    <div class="card">
+
+        <h1>Rooms</h1>
+
+        <button id="showCreateRoom">
+            Create Room
+        </button>
+
+        <button id="showJoinRoom">
+            Join Room
+        </button>
+
+        <div id="createRoomSection" class="hidden roomBox">
+
+            <h3>Create Room</h3>
+
+            <input
+                id="createRoomCode"
+                type="text"
+                placeholder="Enter Room Code"
+            >
+
+            <button id="createRoomBtn">
+                Create
+            </button>
+
+        </div>
+
+        <div id="joinRoomSection" class="hidden roomBox">
+
+            <h3>Join Room</h3>
+
+            <input
+                id="joinRoomCode"
+                type="text"
+                placeholder="Enter Room Code"
+            >
+
+            <button id="joinRoomBtn">
+                Join
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CHAT SCREEN -->
+<div id="chatScreen" class="hidden">
+
+    <!-- HEADER -->
+    <div class="chatHeader">
+
+        <div class="headerLeft">
+
+            <div class="avatar">
+                💬
+            </div>
+
+            <div>
+
+                <div id="roomTitle">
+                    Room
+                </div>
+
+                <div id="onlineStatus" class="onlineStatus">
+                    Offline
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TYPING INDICATOR -->
+    <div id="typingIndicator" class="typingIndicator hidden">
+        Someone is typing...
+    </div>
+
+    <!-- MESSAGES -->
+    <div id="messages"></div>
+
+    <!-- INPUT AREA -->
+    <div class="chatBottom">
+
+        <input
+            id="messageInput"
+            type="text"
+            placeholder="Message..."
+            maxlength="1000"
+        >
+
+        <button id="sendBtn">
+            Send
+        </button>
+
+    </div>
 
 </div>
 
