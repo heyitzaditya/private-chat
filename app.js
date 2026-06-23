@@ -132,7 +132,7 @@ currentRoom = code;
 roomScreen.classList.add("hidden");
 chatScreen.classList.remove("hidden");
 
-roomTitle.textContent = code;
+roomTitle.textContent = "Waiting...";
 
 await setDoc(
 doc(db, "rooms", code, "presence", currentUser),
@@ -148,27 +148,46 @@ listenMessages();
 
 }
 
+
 function listenPresence() {
 
 onSnapshot(
 collection(db, "rooms", currentRoom, "presence"),
 (snapshot) => {
 
-let count = 0;
+let friendName = "Waiting...";
+let friendOnline = false;
+let onlineCount = 0;
 
-snapshot.forEach((doc) => {
+snapshot.forEach((docSnap) => {
 
-const data = doc.data();
+const data = docSnap.data();
 
-if (data.online) count++;
+if (data.online) {
+onlineCount++;
+}
+
+if (data.name !== currentUser) {
+friendName = data.name;
+friendOnline = data.online;
+}
 
 });
 
-if (count > 1) {
+roomTitle.textContent = friendName;
+
+if (friendOnline) {
+
 onlineStatus.innerHTML = "🟢 Online";
-}
-else {
+onlineStatus.classList.remove("offline");
+onlineStatus.classList.add("online");
+
+} else {
+
 onlineStatus.innerHTML = "⚫ Offline";
+onlineStatus.classList.remove("online");
+onlineStatus.classList.add("offline");
+
 }
 
 }
