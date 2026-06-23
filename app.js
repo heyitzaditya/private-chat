@@ -155,38 +155,38 @@ onSnapshot(
 collection(db, "rooms", currentRoom, "presence"),
 (snapshot) => {
 
-let friendName = "Waiting...";
-let friendOnline = false;
-let onlineCount = 0;
+const users = [];
 
 snapshot.forEach((docSnap) => {
 
 const data = docSnap.data();
 
-if (data.online) {
-onlineCount++;
-}
-
-if (data.name !== currentUser) {
-friendName = data.name;
-friendOnline = data.online;
-}
+users.push(data);
 
 });
 
-roomTitle.textContent = friendName;
+const friend = users.find(
+user => user.name !== currentUser
+);
 
-if (friendOnline) {
+if (friend) {
+
+roomTitle.textContent = friend.name;
+
+if (friend.online) {
 
 onlineStatus.innerHTML = "🟢 Online";
-onlineStatus.classList.remove("offline");
-onlineStatus.classList.add("online");
 
 } else {
 
 onlineStatus.innerHTML = "⚫ Offline";
-onlineStatus.classList.remove("online");
-onlineStatus.classList.add("offline");
+
+}
+
+} else {
+
+roomTitle.textContent = "Waiting...";
+onlineStatus.innerHTML = "⚫ Offline";
 
 }
 
@@ -194,6 +194,8 @@ onlineStatus.classList.add("offline");
 );
 
 }
+
+
 
 sendBtn.onclick = sendMessage;
 
@@ -299,9 +301,6 @@ messagesDiv.innerHTML += `
 ${data.sender}
 </div>
 
-<div class="messageText">
-${data.text}
-</div>
 
 <div class="messageInfo">
 ${time}
